@@ -46,7 +46,8 @@ class PIE_MENU_SIMPLE_LIGHT(Menu):
 
         pie = layout.menu_pie()
         pie.operator("add.three_point_light")
-        pie.operator("add.sun_light")
+        pie.operator("add.sky_light")
+        pie.operator("add.moon_light")
 
 class PIE_MENU_SIMPLE_LIGHT_CALL(bpy.types.Operator):
     bl_idname = 'sop.sm_template'
@@ -87,9 +88,9 @@ class THREE_POINT_LIGHT(bpy.types.Operator):
 
         return {"FINISHED"}
 
-class SUN_LIGHT(bpy.types.Operator):
-    bl_idname = "add.sun_light"
-    bl_label = "Add sun light"
+class SKY_LIGHT(bpy.types.Operator):
+    bl_idname = "add.sky_light"
+    bl_label = "Add sky light"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -114,18 +115,49 @@ class SUN_LIGHT(bpy.types.Operator):
         
         return {"FINISHED"}
 
+class MOON_LIGHT(bpy.types.Operator):
+    bl_idname = "add.moon_light"
+    bl_label = "Add moon light"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+
+        bpy.ops.object.light_add(type="AREA", align="WORLD", location=(-20, 8, 10), rotation=(0, -1.047, -0.523))
+        object = bpy.context.object
+        object.data.energy = 6000.0
+        object.data.color = (0.045, 0.192, 0.344)
+        object.data.size = 5
+        
+        bpy.ops.object.light_add(type="AREA", align="WORLD", location=(12, -12, 3), rotation=(0, 0.785, -0.785))
+        object = bpy.context.object
+        object.data.energy = 500.0
+        object.data.color = (0.296, 0.089, 0.003)
+        object.data.use_shadow = False
+        object.data.size = 5
+
+        bpy.ops.object.light_add(type="AREA", align="WORLD", location=(15, 15, 12), rotation=(0, 1.047, 0.785))
+        object = bpy.context.object
+        object.data.energy = 3000.0
+        object.data.color = (0.117, 0.095, 0.296)
+        object.data.use_shadow = False
+        object.data.size = 30
+
+        return {"FINISHED"}
+
 def register():
     bpy.utils.register_class(PIE_MENU_SIMPLE_LIGHT)
     bpy.utils.register_class(PIE_MENU_SIMPLE_LIGHT_CALL)
     bpy.utils.register_class(THREE_POINT_LIGHT)
-    bpy.utils.register_class(SUN_LIGHT)
+    bpy.utils.register_class(SKY_LIGHT)
+    bpy.utils.register_class(MOON_LIGHT)
     add_hotkey()
 
 def unregister():
     bpy.utils.unregister_class(PIE_MENU_SIMPLE_LIGHT)
     bpy.utils.unregister_class(PIE_MENU_SIMPLE_LIGHT_CALL)
     bpy.utils.unregister_class(THREE_POINT_LIGHT)
-    bpy.utils.unregister_class(SUN_LIGHT)
+    bpy.utils.unregister_class(SKY_LIGHT)
+    bpy.utils.unregister_class(MOON_LIGHT)
     remove_hotkey()
 
 if __name__ == "__main__":
