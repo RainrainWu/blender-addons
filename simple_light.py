@@ -46,6 +46,7 @@ class PIE_MENU_SIMPLE_LIGHT(Menu):
 
         pie = layout.menu_pie()
         pie.operator("add.three_point_light")
+        pie.operator("add.sun_light")
 
 class PIE_MENU_SIMPLE_LIGHT_CALL(bpy.types.Operator):
     bl_idname = 'sop.sm_template'
@@ -64,26 +65,67 @@ class THREE_POINT_LIGHT(bpy.types.Operator):
     
     def execute(self, context):
 
-        left = bpy.ops.object.light_add(type="AREA", radius=5, align="WORLD", location=(5.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0))
-        right = bpy.ops.object.light_add(type="AREA", radius=5, align="WORLD", location=(0.0, 5.0, 0.0), rotation=(0.0, 0.0, 0.0))
-        top = bpy.ops.object.light_add(type="AREA", radius=5, align="WORLD", location=(0.0, 0.0, 5.0), rotation=(0.0, 0.0, 0.0))
+        bpy.ops.object.light_add(type="AREA", align="WORLD", location=(15.0, 15.0, 0.0), rotation=(-1.57, -0.0, -0.77))
+        object = bpy.context.object
+        object.data.energy = 1200.0
+        object.data.color = (0.079, 0.344, 0.231)
+        object.data.use_shadow = False
+        object.data.size = 20
+        
+        bpy.ops.object.light_add(type="AREA", align="WORLD", location=(-15.0, -15.0, 10.0), rotation=(1.0, -0.0, -0.77))
+        object = bpy.context.object
+        object.data.energy = 2000.0
+        object.data.color = (1, 0.3, 0)
+        object.data.size = 1
+        
+        bpy.ops.object.light_add(type="AREA", radius=5, align="WORLD", location=(0.0, 0.0, 20.0), rotation=(0.0, 0.0, 0.0))
+        object = bpy.context.object
+        object.data.energy = 1000.0
+        object.data.color = (0.097, 0.421, 1)
+        object.data.use_shadow = False
+        object.data.size = 10
+
         return {"FINISHED"}
 
-def menu_func(self, context):
-    self.layout.operator(THREE_POINT_LIGHT.bl_idname)
+class SUN_LIGHT(bpy.types.Operator):
+    bl_idname = "add.sun_light"
+    bl_label = "Add sun light"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+
+        bpy.ops.object.light_add(type="AREA", radius=5, align="WORLD", location=(-10.0, 10.0, 10.0), rotation=(0.0, -0.77, -0.77))
+        object = bpy.context.object
+        object.data.energy = 6000.0
+        object.data.color = (1, 0.855, 0.750)
+        object.data.size = 0
+        
+        bpy.ops.object.light_add(type="AREA", radius=5, align="WORLD", location=(25.0, 10.0, 15.0), rotation=(0.0, -0.77, -1))
+        object = bpy.context.object
+        object.data.energy = 800.0
+        object.data.color = (1, 0.409, 0.633)
+        object.data.size = 20
+        
+        bpy.ops.object.light_add(type="AREA", radius=5, align="WORLD", location=(0, -25.0, 15.0), rotation=(0.0, -0.77, -0.5))
+        object = bpy.context.object
+        object.data.energy = 800.0
+        object.data.color = (0.367, 1.0, 0.348)
+        object.data.size = 20
+        
+        return {"FINISHED"}
 
 def register():
     bpy.utils.register_class(PIE_MENU_SIMPLE_LIGHT)
     bpy.utils.register_class(PIE_MENU_SIMPLE_LIGHT_CALL)
     bpy.utils.register_class(THREE_POINT_LIGHT)
-    bpy.types.VIEW3D_MT_add.append(menu_func)
+    bpy.utils.register_class(SUN_LIGHT)
     add_hotkey()
 
 def unregister():
     bpy.utils.unregister_class(PIE_MENU_SIMPLE_LIGHT)
     bpy.utils.unregister_class(PIE_MENU_SIMPLE_LIGHT_CALL)
     bpy.utils.unregister_class(THREE_POINT_LIGHT)
-    bpy.types.VIEW3D_MT_add.remove(menu_func)
+    bpy.utils.unregister_class(SUN_LIGHT)
     remove_hotkey()
 
 if __name__ == "__main__":
